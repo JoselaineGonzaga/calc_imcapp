@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 void main() async {
+  await Hive.openBox<IMC>('imcBox');
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicialize o Hive e defina o diretório de armazenamento
