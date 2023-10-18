@@ -1,27 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:calc_imcapp/models/imc.dart'; // Renomeamos a classe para 'IMC'
+import 'package:calc_imcapp/models/imc.dart';
 import 'package:calc_imcapp/services/imc_calculator.dart';
 import 'package:calc_imcapp/utils/imc_interpreter.dart';
-
-void main() {
-  runApp(MeuApp());
-}
-
-class MeuApp extends StatelessWidget {
-  const MeuApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Calculadora IMC',
-      theme: ThemeData(
-        primaryColor: Colors.blue,
-        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.green),
-      ),
-      home: TelaIMC(),
-    );
-  }
-}
 
 class TelaIMC extends StatefulWidget {
   const TelaIMC({Key? key}) : super(key: key);
