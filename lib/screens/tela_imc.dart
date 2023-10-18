@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:calc_imcapp/models/imc.dart';
-import 'package:calc_imcapp/services/imc_calculator.dart';
 import 'package:calc_imcapp/utils/imc_interpreter.dart';
+import 'package:calc_imcapp/services/imc_calculator.dart';
 
 class TelaIMC extends StatefulWidget {
   const TelaIMC({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _TelaIMCState createState() => _TelaIMCState();
 }
 
@@ -20,15 +21,15 @@ class _TelaIMCState extends State<TelaIMC> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calculadora IMC'),
+        title: const Text('Calculadora IMC'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Informe os dados da pessoa:'),
+            const Text('Informe os dados da pessoa:'),
             TextField(
-              decoration: InputDecoration(labelText: 'Nome'),
+              decoration: const InputDecoration(labelText: 'Nome'),
               onChanged: (value) {
                 setState(() {
                   nome = value;
@@ -36,7 +37,7 @@ class _TelaIMCState extends State<TelaIMC> {
               },
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Peso (kg)'),
+              decoration: const InputDecoration(labelText: 'Peso (kg)'),
               onChanged: (value) {
                 setState(() {
                   peso = double.tryParse(value) ?? 0.0;
@@ -44,7 +45,7 @@ class _TelaIMCState extends State<TelaIMC> {
               },
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Altura (m)'),
+              decoration: const InputDecoration(labelText: 'Altura (m)'),
               onChanged: (value) {
                 setState(() {
                   altura = double.tryParse(value) ?? 0.0;
@@ -60,7 +61,7 @@ class _TelaIMCState extends State<TelaIMC> {
                   imcList.add(IMC(nome, imc, resultado));
                 });
               },
-              child: Text('Calcular IMC'),
+              child: const Text('Calcular IMC'),
             ),
             Expanded(
               child: ListView.builder(

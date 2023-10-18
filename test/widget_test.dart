@@ -13,7 +13,7 @@ import 'package:calc_imcapp/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MeuApp());
+    await tester.pumpWidget(const MeuApp());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

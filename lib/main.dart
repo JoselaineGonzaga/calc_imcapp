@@ -1,11 +1,26 @@
+import 'package:calc_imcapp/models/imc.dart'; // Importe a classe IMC
 import 'package:flutter/material.dart';
-import 'package:calc_imcapp/models/imc.dart'; // Renomeamos a classe para 'IMC'
-import 'package:calc_imcapp/services/imc_calculator.dart';
-import 'package:calc_imcapp/utils/imc_interpreter.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
-void main() {
-  runApp(MeuApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicialize o Hive e defina o diretório de armazenamento
+  final appDocumentDirectory =
+      await path_provider.getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDirectory.path);
+
+  // Registre o adapter da classe IMC
+  Hive.registerAdapter(IMCAdapter() as TypeAdapter);
+
+  // Abra a caixa do Hive para os dados do IMC
+  await Hive.openBox<IMC>('imcBox');
+
+  runApp(const MeuApp());
 }
+
+class IMCAdapter {}
 
 class MeuApp extends StatelessWidget {
   const MeuApp({Key? key}) : super(key: key);
@@ -16,9 +31,9 @@ class MeuApp extends StatelessWidget {
       title: 'Calculadora IMC',
       theme: ThemeData(
         primaryColor: Colors.blue,
-        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.green),
+        hintColor: Colors.green,
       ),
-      home: TelaIMC(),
+      home: const TelaIMC(),
     );
   }
 }
@@ -27,6 +42,7 @@ class TelaIMC extends StatefulWidget {
   const TelaIMC({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _TelaIMCState createState() => _TelaIMCState();
 }
 
@@ -40,15 +56,15 @@ class _TelaIMCState extends State<TelaIMC> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calculadora IMC'),
+        title: const Text('Calculadora IMC'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Informe os dados da pessoa:'),
+            const Text('Informe os dados da pessoa:'),
             TextField(
-              decoration: InputDecoration(labelText: 'Nome'),
+              decoration: const InputDecoration(labelText: 'Nome'),
               onChanged: (value) {
                 setState(() {
                   nome = value;
@@ -56,7 +72,7 @@ class _TelaIMCState extends State<TelaIMC> {
               },
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Peso (kg)'),
+              decoration: const InputDecoration(labelText: 'Peso (kg)'),
               onChanged: (value) {
                 setState(() {
                   peso = double.tryParse(value) ?? 0.0;
@@ -64,7 +80,7 @@ class _TelaIMCState extends State<TelaIMC> {
               },
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Altura (m)'),
+              decoration: const InputDecoration(labelText: 'Altura (m)'),
               onChanged: (value) {
                 setState(() {
                   altura = double.tryParse(value) ?? 0.0;
@@ -78,18 +94,24 @@ class _TelaIMCState extends State<TelaIMC> {
 
                 setState(() {
                   imcList.add(IMC(nome, imc, resultado));
+                  _gravarIMC(nome, imc, resultado); // Grava no Hive
                 });
               },
-              child: Text('Calcular IMC'),
+              child: const Text('Calcular IMC'),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: imcList.length,
-                itemBuilder: (context, index) {
-                  final item = imcList[index];
-                  return ListTile(
-                    title: Text('Nome: ${item.nome} - IMC: ${item.imc}'),
-                    subtitle: Text('Resultado: ${item.resultado}'),
+              child: ValueListenableBuilder(
+                valueListenable: Hive.box<IMC>('imcBox').listenable(),
+                builder: (context, Box<IMC> box, _) {
+                  return ListView.builder(
+                    itemCount: box.length,
+                    itemBuilder: (context, index) {
+                      final item = box.getAt(index);
+                      return ListTile(
+                        title: Text('Nome: ${item?.nome} - IMC: ${item?.imc}'),
+                        subtitle: Text('Resultado: ${item?.resultado}'),
+                      );
+                    },
                   );
                 },
               ),
@@ -99,4 +121,14 @@ class _TelaIMCState extends State<TelaIMC> {
       ),
     );
   }
+
+  // Função para gravar os dados do IMC no Hive
+  _gravarIMC(String nome, double imc, String resultado) async {
+    final imcBox = Hive.box<IMC>('imcBox');
+    await imcBox.add(IMC(nome, imc, resultado));
+  }
+
+  calcularIMC(String nome, double peso, double altura) {}
+
+  interpretarIMC(imc) {}
 }
